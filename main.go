@@ -49,6 +49,13 @@ func main() {
 	url := "https://arbeidsplassen.nav.no/public-feed/api/v1/ads"
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("Authorization", bearer)
+
+	q := req.URL.Query()
+	q.Add("size", "50")
+	q.Add("page", "1")
+
+	req.URL.RawQuery = q.Encode()
+
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
@@ -63,6 +70,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	for _, v := range stllinger.Content {
 		log.Println(v.Title)
 	}
