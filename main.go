@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 )
 
-// Stillinger - en liste med stillingsannonser.
+// Stllinger ... en liste med stillingsannonser.
 type Stllinger struct {
 	Content []struct {
 		UUID          string    `json:"uuid"`
@@ -40,5 +43,28 @@ type Stllinger struct {
 }
 
 func main() {
-	log.Println("hello")
+
+	// Les seneste stillinger med public token.
+	bearer := "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwdWJsaWMudG9rZW4udjFAbmF2Lm5vIiwiYXVkIjoiZmVlZC1hcGktdjEiLCJpc3MiOiJuYXYubm8iLCJpYXQiOjE1NTc0NzM0MjJ9.jNGlLUF9HxoHo5JrQNMkweLj_91bgk97ZebLdfx3_UQ"
+	url := "https://arbeidsplassen.nav.no/public-feed/api/v1/ads"
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Add("Authorization", bearer)
+	client := http.DefaultClient
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	stllinger := Stllinger{}
+	err = json.Unmarshal(body, &stllinger)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range stllinger.Content {
+		log.Println(v.Title)
+	}
+
 }
