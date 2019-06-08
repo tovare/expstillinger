@@ -5,7 +5,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
+
+	"golang.org/x/net/html"
 )
 
 // Stllinger ... en liste med stillingsannonser.
@@ -76,4 +79,22 @@ func main() {
 		//doc, err := html.Parse(v.Description)
 	}
 
+}
+
+func htmlToString(doc string) string {
+
+	d := html.NewTokenizerFragment(strings.NewReader(doc), "p")
+	var sb strings.Builder
+loop:
+	for {
+		tok := d.Next()
+		switch {
+		case tok == html.ErrorToken:
+			break loop
+		case tok == html.StartTagToken:
+		case tok == html.TextToken:
+			sb.Write(d.Text())
+		}
+	}
+	return sb.String()
 }
