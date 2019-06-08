@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -86,6 +88,7 @@ func main() {
 
 // Konverterer html5 fragmentene til vanlig tekst.
 func htmlToString(sb *strings.Builder, doc string) string {
+	// XXX: Trenger å bruke flere formateringshints for å lage setninger.
 
 	d := html.NewTokenizerFragment(strings.NewReader(doc), "p")
 loop:
@@ -95,6 +98,10 @@ loop:
 		case tok == html.ErrorToken:
 			break loop
 		case tok == html.StartTagToken:
+		case tok == html.EndTagToken:
+			if d.Token().String() == "</li>" {
+				sb.WriteString(".")
+			}
 		case tok == html.TextToken:
 			sb.Write(d.Text())
 		}
@@ -116,12 +123,14 @@ func mestBrukteSetninger(texts string) {
 		Toppliste       []kv
 	}
 
-	doc, _ := prose.NewDocument(texts)
+	doc, _ := prose.NewDocument(texts, prose.WithSegmentation(true))
 
 	sents := doc.Sentences()
 
 	r := Rapport{}
 	r.AntallSetninger = len(sents)
+
+	totlen := 0
 
 	// Set med antall
 	var liste = make(map[string]int, 100)
@@ -130,11 +139,13 @@ func mestBrukteSetninger(texts string) {
 		if !exists {
 			if len(strings.TrimSpace(sentence.Text)) > 1 {
 				liste[sentence.Text] = 1
+				totlen += len(sentence.Text)
 			}
 		} else {
 			liste[sentence.Text]++
 		}
 	}
+	r.Setningslengde = totlen / r.AntallSetninger
 
 	r.Toppliste = make([]kv, 0)
 	for k, v := range liste {
@@ -145,8 +156,29 @@ func mestBrukteSetninger(texts string) {
 	})
 	r.Toppliste = r.Toppliste[0:10]
 
+	template1 := `
+
+	RAPPORT
+	=============================================================
+	Antall setninger ............. {{.AntallSetninger}}
+	Antall ord pr. setning ........{{.Setningslengde}}
+
+
+	Toppliste
+	---------------------------------------------------------------
+	Antall
+	{{range $k := .Toppliste}}
+	{{$k.Value}}	{{ $k.Key}}
+	{{end}}
+
+	`
+	var out strings.Builder
+	templ, _ := template.New("Rapport").Parse(template1)
+	templ.Execute(&out, r)
+	fmt.Print(out.String())
+
 	// Debug output
-	s, _ := json.MarshalIndent(r, "", "  ")
-	log.Println(string(s))
+	//s, _ := json.MarshalIndent(r, "", "  ")
+	//log.Println(string(s))
 
 }
