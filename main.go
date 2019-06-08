@@ -172,6 +172,7 @@ func mestBrukteSetninger(texts string) {
 	{{end}}
 
 	`
+
 	var out strings.Builder
 	templ, _ := template.New("Rapport").Parse(template1)
 	templ.Execute(&out, r)
