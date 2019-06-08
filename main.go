@@ -5,10 +5,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
 	"golang.org/x/net/html"
+	"gopkg.in/jdkato/prose.v2"
 )
 
 // Stllinger ... en liste med stillingsannonser.
@@ -25,7 +27,7 @@ type Stllinger struct {
 			Municipal  string `json:"municipal"`
 		} `json:"workLocations"`
 		Title          string   `json:"title"`
-		Description    string   `json:"description"`
+		Description    string   `json:"description"` // Stillingstekst html5
 		Source         string   `json:"source"`
 		ApplicationDue string   `json:"applicationDue"`
 		Occupations    []string `json:"occupations"`
@@ -54,8 +56,8 @@ func main() {
 	req.Header.Add("Authorization", bearer)
 
 	q := req.URL.Query()
-	q.Add("size", "50")
-	q.Add("page", "1")
+	q.Add("size", "6000")
+	q.Add("page", "0")
 
 	req.URL.RawQuery = q.Encode()
 
@@ -74,17 +76,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var sb strings.Builder
 	for _, v := range stllinger.Content {
-		log.Println(v.Title)
-		//doc, err := html.Parse(v.Description)
+		htmlToString(&sb, v.Description)
 	}
+	mestBrukteSetninger(sb.String())
 
 }
 
-func htmlToString(doc string) string {
+// Konverterer html5 fragmentene til vanlig tekst.
+func htmlToString(sb *strings.Builder, doc string) string {
 
 	d := html.NewTokenizerFragment(strings.NewReader(doc), "p")
-	var sb strings.Builder
 loop:
 	for {
 		tok := d.Next()
@@ -97,4 +100,53 @@ loop:
 		}
 	}
 	return sb.String()
+}
+
+// tar tekster og finner repeterte setninger.
+func mestBrukteSetninger(texts string) {
+
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	type Rapport struct {
+		AntallSetninger int
+		Setningslengde  int
+		Toppliste       []kv
+	}
+
+	doc, _ := prose.NewDocument(texts)
+
+	sents := doc.Sentences()
+
+	r := Rapport{}
+	r.AntallSetninger = len(sents)
+
+	// Set med antall
+	var liste = make(map[string]int, 100)
+	for _, sentence := range sents {
+		_, exists := liste[sentence.Text]
+		if !exists {
+			if len(strings.TrimSpace(sentence.Text)) > 1 {
+				liste[sentence.Text] = 1
+			}
+		} else {
+			liste[sentence.Text]++
+		}
+	}
+
+	r.Toppliste = make([]kv, 0)
+	for k, v := range liste {
+		r.Toppliste = append(r.Toppliste, kv{k, v})
+	}
+	sort.Slice(r.Toppliste, func(i, j int) bool {
+		return r.Toppliste[i].Value > r.Toppliste[j].Value
+	})
+	r.Toppliste = r.Toppliste[0:10]
+
+	// Debug output
+	s, _ := json.MarshalIndent(r, "", "  ")
+	log.Println(string(s))
+
 }
