@@ -73,6 +73,7 @@ func main() {
 
 	for _, v := range stllinger.Content {
 		log.Println(v.Title)
+		//doc, err := html.Parse(v.Description)
 	}
 
 }
