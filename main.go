@@ -208,14 +208,14 @@ func mestBrukteOrd(texts string) {
 	========================================
 	Automated readability      {{.AutomatedReadability}}
 	ColemanLiau                {{.ColemanLiau}}
-	FleschKincaid              {{.FleschKincaid}}
-	GunningFog                 {{.SMOG}}
+	FleschKincaid              {{.FleschKincaid}}   ( 0-30 veldig vanskelig. )
+	GunningFog                 {{.SMOG}}  ( >12 for vanskelig )
 
 	MeanGradeLevel             {{.MeanGradeLevel}}
 	StdDevGradeLevel           {{.StdDevGradeLevel}}
 
 	DaleChall                  {{.DaleChall}}
-	ReadingEase                {{.ReadingEase}}
+	ReadingEase                {{.ReadingEase}}  0
 
 	`
 	var out strings.Builder

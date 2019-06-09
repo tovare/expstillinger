@@ -1,18 +1,17 @@
 
 Misc experiments.
 
-
-        RAPPORT
+ RAPPORT
         =============================================================
-        Antall setninger ............. 2762
-        Antall ord pr. setning ........72
+        Antall setninger ............. 2711
+        Antall ord pr. setning ........73
 
 
         TOPPLISTE
         ---------------------------------------------------------------
         Antall
 
-        39      Søk på stillingen: Klikk her. 
+        38      Søk på stillingen: Klikk her. 
         13      Nøkkelinformasjon:  Arbeidsgiver:Bergen kommune. 
         9       Personlig egnethet vil bli vektlagt. 
         8       God pensjonsordning, boliglånsordning og ulykkes- og gruppelivsforsikring. 
@@ -20,29 +19,29 @@ Misc experiments.
         6       Nøkkelinformasjon: Arbeidsgiver:Bergen kommune. 
         5       Løsningsorientert. 
         4       Lønn etter avtale. 
+        4       Personlig egnethet vil vektlegges. 
+        4       Arbeidsoppgaver. 
         4       Personlige egenskaper. 
         4       Konkurransedyktige betingelser. 
-        4       Arbeidsoppgaver. 
-        4       Personlig egnethet vil vektlegges. 
-        4       Nøkkelinformasjon: Arbeidsgiver:Oslo kommune. 
-        3       Varierte arbeidsoppgaver. 
+        3       Nøkkelinformasjon: Arbeidsgiver:Oslo kommune. 
         3       Pensjonsordning. 
-        3       Utdanningsnivå  Høyskole / Universitet, Diplom- / Bachelorganisajonad. 
         3       Gode samarbeidsevner. 
-        3       Førerkort klasse B som er gyldig i Norganisajon. 
-        3       Mulighet for etter- og videreutdanning. 
+        3       Varierte arbeidsoppgaver. 
+        3       Gyldig arbeids- og oppholdstillatelse. 
+        3       Language  Norsk. 
+        3       Er fleksibel og løsningsorientert. 
         3       God muntlig og skriftlig fremstillingsevne. 
 
 
         READABILITY ASSESMENT REPORT
         ========================================
-        Automated readability      12.06971975907392
-        ColemanLiau                16.5116228274622
-        FleschKincaid              12.322760209440649
-        GunningFog                 13.182022504056029
+        Automated readability      12.13872056945251
+        ColemanLiau                16.5846933116927
+        FleschKincaid              12.38576271909012   ( 0-30 veldig vanskelig. )
+        GunningFog                 13.221420282612488  ( >12 for vanskelig )
 
-        MeanGradeLevel             13.785567196220322
-        StdDevGradeLevel           1.6730224905114983
+        MeanGradeLevel             13.84446387982777
+        StdDevGradeLevel           1.6751812219675792
 
-        DaleChall                  16.176361003722697
-        ReadingEase                26.082409796052076
+        DaleChall                  16.175711686292082
+        ReadingEase                25.69284821783981  0
