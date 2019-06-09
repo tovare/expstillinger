@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jdkato/prose/summarize"
 	"golang.org/x/net/html"
 	"gopkg.in/jdkato/prose.v2"
 )
@@ -79,11 +80,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Kombinerer alle dokumenter til en streng. Mister litt info.
 	var sb strings.Builder
 	for _, v := range stllinger.Content {
 		htmlToString(&sb, v.Description)
 	}
 	mestBrukteSetninger(sb.String())
+	mestBrukteOrd(sb.String())
 
 }
 
@@ -106,14 +109,21 @@ loop:
 		case tok == html.EndTagToken:
 			switch d.Token().String() {
 			case "</li>", "</p>":
-				sb.WriteString(". ")
+				// Terminate with a dot if one doesn´t exist allready.
+				// Not sure if performance is better treating
+				if len(lasttext) > 1 {
+					r := lasttext[len(lasttext)-1:]
+					if r != "." && r != ":" {
+						sb.WriteString(".")
+					}
+				}
 			}
 		case tok == html.TextToken:
 			lasttext = strings.TrimSpace(string(d.Text()))
 			lasttext = referanse.ReplaceAllString(lasttext, "Referanse ")
 			lasttext = iht.ReplaceAllString(lasttext, "i henhold til ")
 			lasttext = org.ReplaceAllString(lasttext, "organisajon")
-			sb.WriteString(" " + lasttext + " ")
+			sb.WriteString(" " + lasttext)
 		}
 	}
 	return sb.String()
@@ -174,7 +184,7 @@ func mestBrukteSetninger(texts string) {
 	Antall ord pr. setning ........{{.Setningslengde}}
 
 
-	Toppliste
+	TOPPLISTE
 	---------------------------------------------------------------
 	Antall
 	{{range $k := .Toppliste}}
@@ -186,9 +196,30 @@ func mestBrukteSetninger(texts string) {
 	templ, _ := template.New("Rapport").Parse(template1)
 	templ.Execute(&out, r)
 	fmt.Print(out.String())
+}
 
-	// Debug output
-	//s, _ := json.MarshalIndent(r, "", "  ")
-	//log.Println(string(s))
+func mestBrukteOrd(texts string) {
 
+	doc := summarize.NewDocument(texts)
+	res := doc.Assess()
+
+	readabilityAssesmentReport := `
+	READABILITY ASSESMENT REPORT
+	========================================
+	Automated readability      {{.AutomatedReadability}}
+	ColemanLiau                {{.ColemanLiau}}
+	FleschKincaid              {{.FleschKincaid}}
+	GunningFog                 {{.SMOG}}
+
+	MeanGradeLevel             {{.MeanGradeLevel}}
+	StdDevGradeLevel           {{.StdDevGradeLevel}}
+
+	DaleChall                  {{.DaleChall}}
+	ReadingEase                {{.ReadingEase}}
+
+	`
+	var out strings.Builder
+	templ, _ := template.New("Rapport").Parse(readabilityAssesmentReport)
+	templ.Execute(&out, res)
+	fmt.Print(out.String())
 }

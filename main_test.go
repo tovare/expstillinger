@@ -1,14 +1,13 @@
 package main
 
 import (
-	"log"
 	"strings"
 	"testing"
 
 	"golang.org/x/net/html"
 )
 
-// TestParser ... test of parse function
+// TestParser ... test of parse function, just a spin.
 func TestParser(t *testing.T) {
 	s := `
 	<p>
@@ -24,10 +23,8 @@ func TestParser(t *testing.T) {
 loop:
 	for {
 		tok := doc.Next()
-		log.Println("TOKEN TYPE", tok, doc.Token())
 		switch {
 		case tok == html.ErrorToken:
-			log.Println("ERROR: ", doc.Err())
 			break loop
 		case tok == html.StartTagToken:
 		case tok == html.TextToken:
