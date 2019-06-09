@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -58,7 +59,7 @@ func main() {
 	req.Header.Add("Authorization", bearer)
 
 	q := req.URL.Query()
-	q.Add("size", "6000")
+	q.Add("size", "200")
 	q.Add("page", "0")
 
 	req.URL.RawQuery = q.Encode()
@@ -91,19 +92,28 @@ func htmlToString(sb *strings.Builder, doc string) string {
 	// XXX: Trenger å bruke flere formateringshints for å lage setninger.
 
 	d := html.NewTokenizerFragment(strings.NewReader(doc), "p")
+	lasttext := ""
 loop:
 	for {
 		tok := d.Next()
+		referanse := regexp.MustCompile(`(?i)ref.`)
+		iht := regexp.MustCompile(`(?i)iht.`)
+		org := regexp.MustCompile(`(?i)org.`)
 		switch {
 		case tok == html.ErrorToken:
 			break loop
 		case tok == html.StartTagToken:
 		case tok == html.EndTagToken:
-			if d.Token().String() == "</li>" {
-				sb.WriteString(".")
+			switch d.Token().String() {
+			case "</li>", "</p>":
+				sb.WriteString(". ")
 			}
 		case tok == html.TextToken:
-			sb.Write(d.Text())
+			lasttext = strings.TrimSpace(string(d.Text()))
+			lasttext = referanse.ReplaceAllString(lasttext, "Referanse ")
+			lasttext = iht.ReplaceAllString(lasttext, "i henhold til ")
+			lasttext = org.ReplaceAllString(lasttext, "organisajon")
+			sb.WriteString(" " + lasttext + " ")
 		}
 	}
 	return sb.String()
@@ -154,7 +164,7 @@ func mestBrukteSetninger(texts string) {
 	sort.Slice(r.Toppliste, func(i, j int) bool {
 		return r.Toppliste[i].Value > r.Toppliste[j].Value
 	})
-	r.Toppliste = r.Toppliste[0:10]
+	r.Toppliste = r.Toppliste[0:20]
 
 	template1 := `
 
@@ -168,8 +178,7 @@ func mestBrukteSetninger(texts string) {
 	---------------------------------------------------------------
 	Antall
 	{{range $k := .Toppliste}}
-	{{$k.Value}}	{{ $k.Key}}
-	{{end}}
+	{{$k.Value}}	{{ $k.Key}} {{end}}
 
 	`
 
