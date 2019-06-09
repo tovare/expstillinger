@@ -1,14 +1,16 @@
 
 Misc experiments.
 
- RAPPORT
+        RAPPORT
         =============================================================
+
         Antall setninger ............. 2711
         Antall ord pr. setning ........73
 
 
         TOPPLISTE
         ---------------------------------------------------------------
+        
         Antall
 
         38      Søk på stillingen: Klikk her. 
