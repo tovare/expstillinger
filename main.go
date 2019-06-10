@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	
+	"github.com/jdkato/prose/summarize"
 	"golang.org/x/net/html"
 	"gopkg.in/jdkato/prose.v2"
 )
@@ -74,7 +74,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stllinger := Stllinger{}
+	var stllinger Stllinger
 	err = json.Unmarshal(body, &stllinger)
 	if err != nil {
 		log.Fatal(err)
