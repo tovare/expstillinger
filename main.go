@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jdkato/prose/summarize"
+	
 	"golang.org/x/net/html"
 	"gopkg.in/jdkato/prose.v2"
 )
@@ -203,7 +203,10 @@ func mestBrukteOrd(texts string) {
 	doc := summarize.NewDocument(texts)
 	res := doc.Assess()
 
+	// Litt oppsummering av hva vi ser.
+
 	readabilityAssesmentReport := `
+
 	READABILITY ASSESMENT REPORT
 	========================================
 	Automated readability      {{.AutomatedReadability}}
@@ -222,4 +225,5 @@ func mestBrukteOrd(texts string) {
 	templ, _ := template.New("Rapport").Parse(readabilityAssesmentReport)
 	templ.Execute(&out, res)
 	fmt.Print(out.String())
+
 }
