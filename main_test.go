@@ -20,7 +20,7 @@ func TestParser(t *testing.T) {
 	`
 	doc := html.NewTokenizerFragment(strings.NewReader(s), "p")
 	var sb strings.Builder
-loop:
+loop: 
 	for {
 		tok := doc.Next()
 		switch {

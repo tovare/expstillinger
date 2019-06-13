@@ -53,29 +53,38 @@ type Stllinger struct {
 
 func main() {
 
-	// Les seneste stillinger med public token.
-	bearer := "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwdWJsaWMudG9rZW4udjFAbmF2Lm5vIiwiYXVkIjoiZmVlZC1hcGktdjEiLCJpc3MiOiJuYXYubm8iLCJpYXQiOjE1NTc0NzM0MjJ9.jNGlLUF9HxoHo5JrQNMkweLj_91bgk97ZebLdfx3_UQ"
-	url := "https://arbeidsplassen.nav.no/public-feed/api/v1/ads"
-	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Add("Authorization", bearer)
+	debug := true
 
-	q := req.URL.Query()
-	q.Add("size", "200")
-	q.Add("page", "0")
+	var body []byte
 
-	req.URL.RawQuery = q.Encode()
+	if(!debug) {
+		// Les seneste stillinger med public token.
+		bearer := "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwdWJsaWMudG9rZW4udjFAbmF2Lm5vIiwiYXVkIjoiZmVlZC1hcGktdjEiLCJpc3MiOiJuYXYubm8iLCJpYXQiOjE1NTc0NzM0MjJ9.jNGlLUF9HxoHo5JrQNMkweLj_91bgk97ZebLdfx3_UQ"
+		url := "https://arbeidsplassen.nav.no/public-feed/api/v1/ads"
+		req, err := http.NewRequest("GET", url, nil)
+		req.Header.Add("Authorization", bearer)
 
-	client := http.DefaultClient
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
+		q := req.URL.Query()
+		q.Add("size", "200")
+		q.Add("page", "0")
+
+		req.URL.RawQuery = q.Encode()
+
+		client := http.DefaultClient
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Fatal(err)
+		}
+		body, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}else{
+		body =  []byte(MockData)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	var stllinger Stllinger
-	err = json.Unmarshal(body, &stllinger)
+	err := json.Unmarshal(body, &stllinger)
 	if err != nil {
 		log.Fatal(err)
 	}

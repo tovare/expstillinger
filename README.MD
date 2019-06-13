@@ -1,6 +1,11 @@
 
 Misc experiments.
 
+TOKEN="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9eyJzdWIiOiJwdWJsaWMudG9rZW4udjFAbmF2Lm5vIiwiYXVkIjoiZmVlZC1hcGktdjEiLCJpc3MiOiJuYXYubm8iLCJpYXQiOjE1NTc0NzM0MjJ9.jNGlLUF9HxoHo5JrQNMkweLj_91bgk97ZebLdfx3_UQ"
+curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://arbeidsplassen.nav.no/public-feed/api/v1/ads
+
+
+
         RAPPORT
         =============================================================
 
