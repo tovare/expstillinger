@@ -11,7 +11,8 @@ import (
 	"sort"
 	"strings"
 	"time"
-
+	"bufio"
+	"os"
 	"github.com/jdkato/prose/summarize"
 	"golang.org/x/net/html"
 	"gopkg.in/jdkato/prose.v2"
@@ -57,7 +58,7 @@ func main() {
 
 	var body []byte
 
-	if(!debug) {
+	if !debug {
 		// Les seneste stillinger med public token.
 		bearer := "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwdWJsaWMudG9rZW4udjFAbmF2Lm5vIiwiYXVkIjoiZmVlZC1hcGktdjEiLCJpc3MiOiJuYXYubm8iLCJpYXQiOjE1NTc0NzM0MjJ9.jNGlLUF9HxoHo5JrQNMkweLj_91bgk97ZebLdfx3_UQ"
 		url := "https://arbeidsplassen.nav.no/public-feed/api/v1/ads"
@@ -79,8 +80,8 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-	}else{
-		body =  []byte(MockData)
+	} else {
+		body = []byte(MockData)
 	}
 
 	var stllinger Stllinger
@@ -89,11 +90,32 @@ func main() {
 		log.Fatal(err)
 	}
 
+
 	// Kombinerer alle dokumenter til en streng. Mister litt info.
 	var sb strings.Builder
 	for _, v := range stllinger.Content {
 		htmlToString(&sb, v.Description)
 	}
+
+	// Lag et dokument for doccano
+	setningPrLinjeTilFil := func(sb string) {
+		doc, _ := prose.NewDocument(sb, prose.WithSegmentation(true))
+		sents := doc.Sentences()
+		re := regexp.MustCompile(`\r?\n`)
+		f, err := os.Create("lines.txt")
+		if(err == nil) {
+			defer f.Close()	
+			w := bufio.NewWriter(f)
+			for _,sentence := range sents {
+				w.WriteString(re.ReplaceAllString(sentence.Text," "))
+				w.WriteString("\n")
+
+			}
+		}
+
+	}
+
+	setningPrLinjeTilFil(sb.String())
 	mestBrukteSetninger(sb.String())
 	mestBrukteOrd(sb.String())
 
